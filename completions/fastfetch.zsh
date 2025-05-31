@@ -1,12 +1,7 @@
 #compdef fastfetch
 
 function _fastfetch() {
-
-  if (( ! ${+commands[python3]} )); then
-    return
-  fi
-
-  local state
+  (( ${+commands[python3]} )) || return
 
   local -a opts=("${(f)$(
         python3 <<EOF
@@ -69,6 +64,8 @@ if __name__ == "__main__":
         sys.exit(1)
 EOF
   )}")
+
+  local state
 
   _arguments "$opts[@]"
 
