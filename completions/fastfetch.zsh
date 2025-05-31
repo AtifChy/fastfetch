@@ -2,9 +2,7 @@
 
 function _fastfetch() {
 
-  whence python3 &> /dev/null
-  if [ $? -ne 0 ]
-  then
+  if (( ! ${+commands[python3]} )); then
     return
   fi
 
@@ -12,15 +10,11 @@ function _fastfetch() {
 
   local -a opts=("${(f)$(
         python3 <<EOF
-import json
-import subprocess
-import sys
+import json, subprocess, sys
 
 
 def main():
-    data: dict[str, list[dict]] = json.loads(
-        subprocess.check_output(["fastfetch", "--help-raw"])
-    )
+    data = json.loads(subprocess.check_output(["fastfetch", "--help-raw"]))
 
     for key in data:
         for flag in data[key]:
@@ -85,7 +79,9 @@ EOF
       ;;
     modules)
       local -a modules=("${(f)$(fastfetch --list-modules autocompletion)}")
-      modules=(${(L)^modules[@]%%:*}-format format color)
+      modules=(${(L)^modules[@]%%:*}-format)
+      modules+=(format color)
+      modules+=({logo,key,percent,display-compact,sound,gpu-hide,dns-show}-type)
       _describe 'module' modules
       ;;
     presets)
